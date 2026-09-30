@@ -57,4 +57,4 @@ embeddings=HuggingFaceEmbeddings(
 )
 
 #Generation of embeddings and storage in VDB using FAISS
-# vector_store=FAISS.from_texts(chunks,embeddings)
+vector_store=FAISS.from_texts(chunks,embeddings)
