@@ -25,6 +25,8 @@
 import streamlit as st
 import pdfplumber
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
 
 st.header("QueryForge")
 with st.sidebar:
@@ -48,3 +50,11 @@ text_splitter=RecursiveCharacterTextSplitter(
 )
 chunks=text_splitter.split_text(text)
 st.write(chunks)
+
+#setting up a model for embedding generation
+embeddings=HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+#Generation of embeddings and storage in VDB using FAISS
+vector_store=FAISS.from_texts(chunks,embeddings)
