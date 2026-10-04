@@ -74,9 +74,10 @@ def format_docs(docs):
 
 #similarity search
 retriever=vector_store.as_retriever(
-    search_type='mmr'
+    search_type="mmr"
     search_kwargs={"k":4} #return k closest match
 )
+#define the llm
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature = 0.5, #randomness of the model
@@ -84,6 +85,19 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=GEMINI_API_KEY
 )
 
+#provide system prompts
+prompt=ChatPromptTemplate.from_messages([
+    ("system","You are a helpful assistant answering the questions about the PDF document.\n\n"
+     "Guidelines:\n"
+     "1.Provide complete,well-explained answer using the context given below.\n"
+     "2.Include relevant details,numbers, and explainations to give a thorough response.\n"
+     "3.If the context mentions related information,include it to give a fuller picture.\n"
+     "4.Only use the information given in the context - do not use outside knowledge.\n"
+     "5.Summarize long information,ideally in bullets wherever needed.\n"
+     "6,If the information is not there, say so politely\n\n"
+     "Context:\n{context}")
+     ("human","{question}")
+])
 chain = (
     {"context"=retriever | format_docs,"question"=RunnablePassThrough()}  
     | prompt
