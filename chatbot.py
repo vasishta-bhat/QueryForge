@@ -110,7 +110,6 @@ if file is not None:
         | llm
         | StrOutputParser()
     )
-
     if user_question:
         response=chain.invoke(user_question)
         st.write(response)
