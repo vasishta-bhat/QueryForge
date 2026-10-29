@@ -34,6 +34,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough 
 load_dotenv()
+import time
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 print("API key loaded:", GEMINI_API_KEY is not None)
@@ -71,7 +72,9 @@ if file is not None:
     vector_store=FAISS.from_texts(chunks,embeddings)
 
 #taking user question
-    user_question=st.text_input("Type your question here")
+    with st.form("question_form"):
+        user_question = st.text_input("Type your question here")
+        submit = st.form_submit_button("Get answer")
 
     def format_docs(docs):
         return "\n\n".join([doc.page_content for doc in docs])
@@ -111,6 +114,8 @@ if file is not None:
         | StrOutputParser()
     )
     
-    if user_question:
-        response=chain.invoke(user_question)
+    if submit and user_question.strip():
+        start = time.perf_counter()
+        response = chain.invoke(user_question)
+        print("Chain took:", round(time.perf_counter() - start, 2), "seconds")
         st.write(response)
